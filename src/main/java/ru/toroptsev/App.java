@@ -24,7 +24,13 @@ public class App {
             double floorHeight = Double.parseDouble(args[1]);
             double speed = Double.parseDouble(args[2]);
             double openCloseTimeout = Double.parseDouble(args[3]);
-            elevator = new Elevator(floorsCount, floorHeight, speed, openCloseTimeout);
+            elevator = new Elevator(new HouseElevatorStrategy(floorsCount),
+                                    new EventsConsoleMonitor(),
+//                                    new EventsFileMonitor("events.log"),
+//                                    new CommandsFileMonitor("commands.log"),
+                                    floorHeight,
+                                    speed,
+                                    openCloseTimeout);
         } catch (IllegalArgumentException e) {
             System.out.println("Invalid arguments format: " + e.getMessage());
             return;
@@ -46,15 +52,15 @@ public class App {
                 }
 
                 if ("quit".equals(command) || "exit".equals(command)) {
-                    finishElevator();
+                    terminateElevator();
                     System.out.println("App finished");
                     return;
                 } else {
                     String type = command.substring(0, 1);
                     String floor = command.substring(1, command.length());
                     int selectedFloor = Integer.parseInt(floor);
-                    Command cmd = "F".equals(type) ? new FloorCommand(selectedFloor) : new ElevatorCommand(selectedFloor);
-                    elevator.addCommand(cmd);
+                    CommandSource source = CommandSource.valueOf(type);
+                    elevator.addCommand(selectedFloor, source);
                 }
             } catch (NoSuchElementException e) {
                 System.out.println("Wrong input: " + e.getMessage());
@@ -63,8 +69,8 @@ public class App {
         }
     }
 
-    private static void finishElevator() {
-        elevator.finish();
+    private static void terminateElevator() {
+        elevator.terminate();
         try {
             elevatorThread.join();
         } catch (InterruptedException e) {
