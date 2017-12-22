@@ -61,12 +61,11 @@ public class Elevator implements Runnable {
             }
 
             if (commands.containsKey(currentFloor) && !commandShouldBeSkipped()) {
-                System.out.println("The elevator opened the doors");
-
+                System.out.println("<-||->");
                 sleep(openCloseTimeout);
 
                 commands.remove(currentFloor);
-                System.out.println("The elevator closed the doors");
+                System.out.println("|-><-|");
             }
 
             defineNextDirection();
@@ -76,7 +75,7 @@ public class Elevator implements Runnable {
 
                 sleep(floorHeight / speed);
 
-                System.out.println("The elevator passes the " + currentFloor + " floor");
+                System.out.println(currentFloor);
             }
         }
     }
@@ -127,20 +126,5 @@ public class Elevator implements Runnable {
         }
 
         currentDirection = null;
-    }
-
-    private enum Direction {
-        UP(1),
-        DOWN(-1);
-
-        private int directionStep;
-
-        Direction(int directionStep) {
-            this.directionStep = directionStep;
-        }
-
-        public int getDirectionStep() {
-            return directionStep;
-        }
     }
 }
